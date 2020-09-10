@@ -5,24 +5,12 @@ const express = require('@feathersjs/express');
 const {Sequelize, DataTypes} = require('sequelize');
 const fs = require('feathers-sequelize');
 
-/* config for postgres' DB connection URI string
-const conf = {
-  db: {
-    'user': 'username',
-    password: 'userpass',
-    host: 'localhost',
-    port: '5432',
-    name: 'dbname'
-  }
-}
-const dbinfo = conf.db;*/
-
 // new exp-feathers app instance
 const app = express(feathers());
 
 // new Sq connection instance
 const sequelize = new Sequelize(
-  'postgres://postgres:PW@localhost:5432/fsp',
+  'postgres://postgres:1newpass@localhost:5432/fsp',
   {logging: false}
 );
 
@@ -50,20 +38,9 @@ Client.hasMany(Estimate, {
     allowNull: false
   }
 });
-Estimate.belongsTo(Client);
+Estimate.belongsTo(Client); //, {as: 'EstimateClient', constraints: false}
 
-// check connecting and modeling
-async function testSeq() {
-  try {
-    await sequelize.authenticate();
-    console.log('Successful DB connection',
-      //Client === sequelize.models.Client,
-      //Estimate === sequelize.models.Estimate
-    );
-  } catch (error) {
-    console.error('Error connecting to DB:', error);
-  };
-};
+
 
 // express deployment
 app.use(express.json());
@@ -75,15 +52,19 @@ app.use(express.errorHandler());
 // routes for services
 app.use('/clients', fs({Model: Client}));
 app.use('/estimates', fs({Model: Estimate}));
+app.use('/test', (req, res) => {
+  Estimate.create({ammount: 165706.25, clientId: 4});
+  console.log('called');
+  res.json({done: true});
+});
+/*const associateEstimateToClient = (context) => {
 
-const associateEstimateToClient = (context) => {
-
-};
+};*/
 
 // hooking example
 app.service('estimates').hooks({
   before: {
-    create: [ associateEstimateToClient ]
+    //create: [ associateEstimateToClient ]
   }
 });
 
@@ -93,7 +74,7 @@ app.listen(3030).on('listening', () =>
 );
 
 // DB connection testings
-testSeq();
+//testSeq();
 
 /* syncronize seq models with DB, meaning it will create the required tables (or add/alter missing/differing 
 * tables for such casses).
@@ -103,27 +84,14 @@ testSeq();
 sequelize.sync({force: true, alter: true})
 // fill DB with dummy models instances
 .then(() => {
-  Client.bulkCreate(
+  try { Client.bulkCreate(
     [ {name: 'Client 1', address: '1st Street'},
     {name: 'Client 2', address: '2nd Street'},
     {name: 'Client 3', address: '3rd Street'},
     {name: 'Client 4', address: '4th Street'} ]
-  )
-/*}).then(() => {
-  Estimate.create({ammount: 165706.25});*/
+  ) } catch (error) {
+    console.log(error);
+  }
 }).finally(() => {
   console.log('successful rows insertion')
 });
-  
-/*Estimate.sync({force: true, alter: true})
-.then(() => {
-    try {
-      Estimate.create({ammount: 165706.25});
-    } catch (error) {
-      console.log('error inserting row @ Estimate table');
-    }
-  }).then(() => {
-      console.log('successful row insertion @ Estimate table');
-  }).finally(() => {
-    sequelize.close();
-});*/
