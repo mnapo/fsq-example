@@ -51,7 +51,7 @@ app.use(express.errorHandler());
 // routes for services
 app.use('/clients', fs({Model: Client}));
 app.use('/estimates', fs({Model: Estimate}));
-app.use('/test', (req, res) => {
+app.use('/populate-estimates', (req, res) => {
   Estimate.create({ammount: 165706.25, clientId: 4});
   console.log('called');
   res.json({done: true});
