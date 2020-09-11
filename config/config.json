@@ -8,17 +8,17 @@
     "port": 5432
   },
   "test": {
-    "username": "root",
+    "username": "postgres",
     "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "database": "fsp-test",
+    "host": "localhost",
+    "dialect": "postgres"
   },
   "production": {
-    "username": "root",
+    "username": "postgres",
     "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "database": "fsp-prod",
+    "host": "localhost",
+    "dialect": "postgres"
   }
 }
