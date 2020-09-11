@@ -1,7 +1,6 @@
 // libraries
 const feathers = require('@feathersjs/feathers');
 const express = require('@feathersjs/express');
-//const socketio = require('@feathersjs/socketio');
 const {Sequelize, DataTypes} = require('sequelize');
 const fs = require('feathers-sequelize');
 
